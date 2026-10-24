@@ -1,0 +1,45 @@
+#!/usr/bin/env python
+# coding: utf-8
+
+# In[5]:
+
+
+def simpson_38(f, a, b, n): 
+    '''
+    Tính tích phân xác định bằng phương pháp Simpson 3/8
+    Tham số:
+    f: hàm số cần tính tích phân
+    a: giới hạn dưới của đoạn tích phân (float)
+    b: giới hạn trên của đoạn tích phân (float)
+    n: số khoảng chia, phải là bội số của 3 (int)
+    Trả về:
+    float: Giá trị xấp xỉ của tích phân (hoặc None nếu không hợp lệ)
+    '''
+    # 1. Kiểm tra điều kiện n phải bội số của 3 
+    if n%3 !=0:
+         print("n phải là bội số của 3")
+         return None 
+    # 2. Tính độ dài mỗi khoảng chia
+    h = (b-a)/ n
+    # 3. Khởi tạo tổng ban đầu với hai điểm biên 
+    I = f(a) + f(b)
+    # 4. Vòng lặp tính cá điểm nút trung gian
+    for i in range(1, n):
+        x_i = a + i*h
+        if i%3 == 0:
+            I += 2*f(x_i) # Nhân với 2 tại các vị trí chia hết cho 3
+        else:
+            I += 3*f(x_i) # Nhân với 3 tại các vị trí còn lại
+    # 5. Nhân với hệ số công thức bên ngoài và trả về kết quả
+    I *= (3*h/8)
+    return I
+# Ví dụ: Tính tích phân hàm f(x)= x^2 từ 0 đến 1
+def f(x):
+    return x**2
+ket_qua= simpson_38(f, 0, 1, 10)
+print("Kết quả tích phân là:", ket_qua)
+
+
+
+
+
