@@ -1,9 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[5]:
-
-
 def simpson_38(f, a, b, n): 
     '''
     Tính tích phân xác định bằng phương pháp Simpson 3/8
