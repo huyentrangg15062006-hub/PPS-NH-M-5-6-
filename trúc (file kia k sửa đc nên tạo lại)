@@ -1,0 +1,37 @@
+#thuật toán 15: Phương pháp hình thang
+'''
+Require:
+    -f: hàm số cần tính tích phân
+    -a: cận dưới
+    -b: cận trên
+    -n: số khoảng chia (n>0)
+    -M2: chặn trên đạo hàm cấp 2
+    -h: độ rộng khoảng chia
+Ensure:
+    -trả về giá trị tuple[I, E]: giá trị tích phân xấp xỉ I và cận sai số E
+'''
+def trapezoid(f, a, b, n, M2): 
+  if n<=0:
+        print('Số khoảng chia phải lớn hơn 0')
+            return None
+  sum=0
+  h=(b-a)/n
+  for i in range(1,n):
+      sum+=f(a+i*h)
+  I=(h/2)*(f(a)+2*sum+f(b))
+  E=M2*(b-a)**3/(12*n**2)
+  return I, E
+'''
+Require:
+    -x: danh sách mảng dữ liệu x
+    -y: danh sách mảng dữ lệu y
+    -h: độ rộng khoảng chia
+Ensure:
+    -trả về giá trị area: tổng diện tích bề mặt cắt ngang xấp xỉ tính được 
+'''
+def trapezoid_table(x, y):
+    area=0
+    for i in range(len(x)-1):
+        h=x[i+1]-x[i]
+        area+=0.5*h*(y[i]+y[i+1])
+    return area
