@@ -1,1 +1,29 @@
-
+def midpoint(f, a, b, n, M2) -> tuple[float, float]: #(I, E)
+    """
+    tên thuật toán: Phương pháp hình chữ nhật trung tâm kèm cận sai số
+    require: 
+        f: hàm số cần tính tích phân (callable function)
+        a: cận dưới của tích phân (float hoặc int)
+        b: cận trên của tích phân (float hoặc int)
+        n: số khoảng chia (số nguyên dương)
+        M2: chặn trên của giá trị tuyệt đối đạo hàm cấp 2 ( dùng để đánh giá sai số)
+    ensure:
+        tuple(I_rec, E): giá trị xấp xỉ tích phân và cận sai số lí thuyết
+    """
+    #xử lí tình huống biên:
+    if not callable(f):
+        raise(Exception('tham so f phai la mot ham so hop le'))
+    if a >= b:
+        raise(Exception('can duoi a phai nho hon can tren a'))
+    if not isinstance(n, int):
+        raise(Exception('so khoang chia n phai la so nguyen duong'))
+    if M2<0:
+        raise(Exception('can sai so M2 phai la so ko am'))
+    h = (b-a)/n #dòng 1- thuật toán 13
+    Sum_val = 0.0
+    for i in range(n): #dòng 2 - thuật toán 13
+        midpoint_val = ((a+i*h) + (a + (i+1)*h))/2 #dòng 3 - thuật toán 13
+        Sum_val += f(midpoint_val) #dòng 4 - thuật toán 13
+    I_rec = h*Sum_val #dòng 6 - thuật toán 13
+    E = (M2 * (b-a) * (h**2))/24
+    return I_rec, E #dòng7 - thuật toán 13
