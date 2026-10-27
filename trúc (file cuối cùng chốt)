@@ -1,4 +1,4 @@
-#thuật toán 15: Phương pháp hình thang
+#thuật toán 14: Phương pháp hình thang
 '''
 Require:
     -f: hàm số cần tính tích phân
@@ -15,10 +15,10 @@ def trapezoid(f, a, b, n, M2):
         print('Số khoảng chia phải lớn hơn 0')
         return None
   sum=0
-  h=(b-a)/n
+  h=(b-a)/n #dòng 1 thuật toán 14
   for i in range(1,n):
       sum+=f(a+i*h)
-  I=(h/2)*(f(a)+2*sum+f(b))
+  I=(h/2)*(f(a)+2*sum+f(b)) #dòng 5 thuật toán 14
   E=M2*(b-a)**3/(12*n**2)
   return I, E
 '''
