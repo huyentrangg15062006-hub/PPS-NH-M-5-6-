@@ -1,45 +1,58 @@
 import numpy as np
+
 def simpson_1_3(f, a, b, n):
-    """Tính tích phân xác định bằng phương pháp Simpson 1/3.
-
-    Tên thuật toán: Công thức Simpson 1/3 tổng quát (Composite Simpson s 1/3
-    Rule)
-
-    Require (Đầu vào):
-        f : Hàm số cần tính tích phân (callable).
-        a : Cận dưới của tích phân (float).
-        b : Cận trên của tích phân (float).
-        n : Số khoảng chia (int, phải là số chẵn, n >= 2).
-
-    Ensure (Đầu ra):
-        Giá trị xấp xỉ của tích phân (float).
     """
-    # --- Bước kiểm tra điều kiện biên ---
+    Tính tích phân xác định bằng phương pháp Simpson 1/3.
+    Tên thuật toán: Công thức Simpson 1/3 tổng quát (Composite Simpson's 1/3 Rule)
+    
+    Đầu vào (Require):
+      f : Hàm số cần tính tích phân (callable).
+      a : Cận dưới của tích phân (float).
+      b : Cận trên của tích phân (float).
+      n : Số khoảng chia (int, phải là số chẵn, n >= 2).
+      
+    Đầu ra (Ensure):
+      Giá trị xấp xỉ của tích phân (float).
+    """
+    # Bước kiểm tra điều kiện biên
     if n % 2 != 0:
-        raise ValueError(
-            f"LỖI: Số khoảng chia n = {n} phải là một SỐ CHẴN cho phương pháp Simpson 1/3!"
-        )
+        raise ValueError(f"LỖI: Số khoảng chia n = {n} phải là một SỐ CHẴN cho phương pháp Simpson 1/3!")
     if a >= b:
         raise ValueError("LỖI: Cận dưới a phải nhỏ hơn cận trên b!")
+        
+    # Bắt đầu thuật toán
+    h = (b - a) / n  # Dòng 1 - Thuật toán 15
+    
+    # Khởi tạo các biến tổng tích lũy
+    sum1 = 0  # Tổng các vị trí i chẵn (nhân với 2)
+    sum2 = 0  # Tổng các vị trí i lẻ (nhân với 4)
+    
+    # Định nghĩa hàm tính x_i = a + i*h
+    def x(i):
+        return a + i * h
+        
+    for i in range(1, n):  # Dòng 2 - Thuật toán 15
+        if i % 2 == 0:     # Dòng 3 - Thuật toán 15
+            sum1 += 2 * f(x(i))  # Dòng 4 - Thuật toán 15
+        else:
+            sum2 += 4 * f(x(i))  # Dòng 6 - Thuật toán 15
+            
+    I_simpson = (h / 3) * (f(a) + sum1 + sum2 + f(b))  # Dòng 9 Thuật toán 15
+    return I_simpson  # Dòng 10 - Thuật toán 15
 
-    # --- Bắt đầu thuật toán ---
-    # dòng 1 - Tính bước nhảy h
-    h = (b - a) / n
-
-    # dòng 2 - Khởi tạo tổng bằng giá trị hai đầu mút
-    tong = f(a) + f(b)
-
-    # dòng 3 - Vòng lặp tính tổng các điểm có chỉ số chẵn (hệ số 2)
-    for i in range(2, n - 1, 2):
-        # dòng 4 - Cộng dồn các giá trị tại nút chẵn
-        tong += 2 * f(a + i * h)
-
-    # dòng 5 - Vòng lặp tính tổng các điểm có chỉ số lẻ (hệ số 4)
-    for i in range(1, n, 2):
-        # dòng 6 - Cộng dồn các giá trị tại nút lẻ
-        tong += 4 * f(a + i * h)
-
-    # dòng 9 - Nhân với h/3
-    ket_qua = tong * (h / 3)
-    # dòng 10 - Kết quả
-    return ket_qua
+# --- VÍ DỤ SỬ DỤNG ---
+if __name__ == "__main__":
+    # Định nghĩa hàm số cần tính tích phân, ví dụ: f(x) = e^(-x^2) từ 0 đến 1, n = 10
+    def f(x):
+        return np.exp(-(x**2))
+        
+    a = 0   # Cận dưới
+    b = 1   # Cận trên
+    n = 10  # Số khoảng chia (số chẵn)
+    
+    try:
+        ket_qua = simpson_1_3(f, a, b, n)
+        print(f"-- Kết quả tích phân Simpson 1/3 (n={n}) --")
+        print(f"Giá trị xấp xỉ: {ket_qua:.8f}")
+    except ValueError as e:
+        print(e)
