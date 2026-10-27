@@ -1,39 +1,196 @@
 import numpy as np
-def simpson_3_8(f, a, b, n):
+def simpson38(f, a, b, n):
     """
-    Tinh tich phan xac dinh bang phuong phap Simpson 3/8.
+    Tinh gan dung tich phan bang cong thuc Simpson 3/8 ghep.
 
-    Require (Dau vao):
-        f : Ham so can tinh tich phan.
-        a : Can duoi cua tich phan.
-        b : Can tren cua tich phan.
-        n : So khoang chia (so nguyen duong, chia het cho 3).
+    Require:
+        f: Ham can tinh tich phan.
+        a, b: Can duoi va can tren.
+        n: So khoang chia, phai la so nguyen duong chia het cho 3.
 
-    Ensure (Dau ra):
-        Gia tri xap xi cua tich phan.
+    Ensure:
+        Tra ve gia tri gan dung cua tich phan tu a den b.
     """
-    # Buoc 1: Kiem tra dieu kien
     if not isinstance(n, (int, np.integer)) or isinstance(n, (bool, np.bool_)):
-        raise TypeError("n phai la so nguyen!")
+        raise TypeError("n phai la so nguyen.")
 
     if n <= 0 or n % 3 != 0:
-        raise ValueError("n phai la so duong chia het cho 3!")
+        raise ValueError("n phai la so nguyen duong chia het cho 3.")
 
-    if a >= b:
-        raise ValueError("Can a phai nho hon can b!")
+    if not np.isfinite(a) or not np.isfinite(b) or a >= b:
+        raise ValueError("Can phai thoa man a < b va la so huu han.")
 
-    # Buoc 2: Tinh buoc nhay
     h = (b - a) / n
+    s = f(a) + f(b)
 
-    # Buoc 3: Khoi tao tong hai dau mut
-    tong = f(a) + f(b)
+    for i in range(1, n):
+        x = a + i * h
 
-    # Buoc 4: Tinh tong cac diem ben trong
+        if i % 3 == 0:
+            s += 2 * f(x)
+        else:
+            s += 3 * f(x)
+
+    return 3 * h * s / 8
+
+def simpson_mixed(f, a, b, n):
+    """
+    Tinh gan dung tich phan bang Simpson 3/8 ket hop Simpson 1/3.
+
+    Require:
+        n la so nguyen duong.
+        Neu n chan, dung Simpson 1/3.
+        Neu n le va n >= 3, dung Simpson 3/8 cho 3 khoang
+        dau va Simpson 1/3 cho cac khoang con lai.
+
+    Ensure:
+        Tra ve gia tri gan dung cua tich phan tu a den b.
+    """
+    if not isinstance(n, (int, np.integer)) or isinstance(n, (bool, np.bool_)):
+        raise TypeError("n phai la so nguyen.")
+    if n <= 0:
+        raise ValueError("n phai la so nguyen duong.")
+    if not np.isfinite(a) or not np.isfinite(b) or a >= b:
+        raise ValueError("Can phai thoa man a < b va la so huu han.")
+    h = (b - a) / n
+    if n % 2 == 0:
+        return _simpson13(f, a, b, n)
+    if n < 3:
+        raise ValueError("n le phai lon hon hoac bang 3.")
+    x = a + 3 * h
+    return simpson38(f, a, x, 3) + _simpson13(f, x, b, n - 3)
+
+def _simpson13(f, a, b, n):
+    """Ham noi bo tinh tich phan bang Simpson 1/3 voi n chan."""
+    if n <= 0 or n % 2 != 0:
+        raise ValueError("Simpson 1/3 yeu cau n chan va duong.")
+    h = (b - a) / n
+    s = f(a) + f(b)
+    for i in range(1, n):
+        x = a + i * h
+        if i % 2 == 0:
+            s += 2 * f(x)
+        else:
+            s += 4 * f(x)
+    return h * s / 3
+
+def simpson38_data(xs, ys):
+    """
+    Tinh gan dung tich phan tu bang du lieu bang Simpson 3/8.
+
+    Require:
+        xs, ys la hai day du lieu cung do dai.
+        xs cach deu, co it nhat 4 diem.
+        So khoang chia chia het cho 3.
+
+    Ensure:
+        Tra ve gia tri gan dung cua tich phan.
+    """
+    xs = np.asarray(xs, dtype=float)
+    ys = np.asarray(ys, dtype=float)
+    _check_data(xs, ys)
+    n = len(xs) - 1
+    if n % 3 != 0:
+        raise ValueError("So khoang chia phai chia het cho 3.")
+    h = (xs[-1] - xs[0]) / n
+    s = ys[0] + ys[-1]
     for i in range(1, n):
         if i % 3 == 0:
-            tong += 2 * f(a + i * h)
+            s += 2 * ys[i]
         else:
-            tong += 3 * f(a + i * h)
+            s += 3 * ys[i]
+    return 3 * h * s / 8
 
-    # Buoc 5: Tinh ket qua
-    return tong * 3 * h / 8
+def simpson_mixed_data(xs, ys):
+    """
+    Tinh tich phan tu bang du lieu bang Simpson 3/8 va Simpson 1/3.
+
+    Require:
+        xs, ys cung do dai, xs cach deu.
+        Neu so khoang chan, dung Simpson 1/3.
+        Neu so khoang le, ghep Simpson 3/8 va Simpson 1/3.
+
+    Ensure:
+        Tra ve gia tri gan dung cua tich phan.
+    """
+    xs = np.asarray(xs, dtype=float)
+    ys = np.asarray(ys, dtype=float)
+    _check_data(xs, ys)
+    n = len(xs) - 1
+    h = (xs[-1] - xs[0]) / n
+    if n % 2 == 0:
+        return _simpson13_data(ys, h)
+    if n < 3:
+        raise ValueError("Can it nhat 4 diem du lieu.")
+    return (
+        simpson38_data(xs[:4], ys[:4])
+        + _simpson13_data(ys[3:], h)
+    )
+
+def _simpson13_data(ys, h):
+    """Ham noi bo tinh Simpson 1/3 tu cac gia tri bang du lieu."""
+    n = len(ys) - 1
+
+    if n <= 0 or n % 2 != 0:
+        raise ValueError("Simpson 1/3 yeu cau so khoang chan.")
+
+    s = ys[0] + ys[-1]
+
+    for i in range(1, n):
+        if i % 2 == 0:
+            s += 2 * ys[i]
+        else:
+            s += 4 * ys[i]
+
+    return h * s / 3
+
+def _check_data(xs, ys):
+    """Kiem tra du lieu dau vao cho cac phuong phap tich phan."""
+    if xs.ndim != 1 or ys.ndim != 1:
+        raise ValueError("xs va ys phai la day mot chieu.")
+
+    if len(xs) != len(ys):
+        raise ValueError("xs va ys phai co cung do dai.")
+
+    if len(xs) < 4:
+        raise ValueError("Can it nhat 4 diem du lieu.")
+
+    if not np.all(np.isfinite(xs)) or not np.all(np.isfinite(ys)):
+        raise ValueError("Du lieu khong duoc chua NaN hoac vo cuc.")
+
+    h = np.diff(xs)
+
+    if not np.all(h > 0):
+        raise ValueError("Cac gia tri xs phai tang dan.")
+
+    if not np.allclose(h, h[0]):
+        raise ValueError("Cac diem xs phai cach deu.")
+
+def simpson38_error_bound(a, b, n, max_fourth_derivative):
+    """
+    Tinh can tren sai so Simpson 3/8 ghep.
+
+    Require:
+        n la so nguyen duong chia het cho 3.
+        max_fourth_derivative la can tren cua |f''''(x)|.
+
+    Ensure:
+        Tra ve can tren sai so tuyet doi.
+    """
+    if not isinstance(n, (int, np.integer)) or isinstance(n, (bool, np.bool_)):
+        raise TypeError("n phai la so nguyen.")
+
+    if n <= 0 or n % 3 != 0:
+        raise ValueError("n phai la so nguyen duong chia het cho 3.")
+
+    if not np.isfinite(a) or not np.isfinite(b) or a >= b:
+        raise ValueError("Can phai thoa man a < b va la so huu han.")
+
+    if not np.isfinite(max_fourth_derivative) or max_fourth_derivative < 0:
+        raise ValueError("Can dao ham bac 4 phai huu han va khong am.")
+
+    return (
+        (b - a) ** 5
+        * max_fourth_derivative
+        / (80 * n ** 4)
+    )
