@@ -120,25 +120,6 @@ def _check_table(xs, ys):
         raise ValueError("Cac diem xs phai cach deu.")
     return xs, ys
 
-def trapezoid_table(xs, ys):
-    """
-    Mo ta:
-        Tinh tich phan tu bang du lieu bang hinh thang ghep.
-    Require:
-        xs, ys la hai day du lieu cung do dai.
-        xs tang dan va cach deu.
-    Ensure:
-        Tra ve gia tri gan dung cua tich phan.
-    """
-    xs, ys = _check_table(xs, ys)
-    n = len(xs) - 1
-    h = (xs[-1] - xs[0]) / n
-
-    s = ys[0] + ys[-1]
-    for i in range(1, n):
-        s += 2 * ys[i]
-    return float(h * s / 2)
-
 def _simpson13_table(ys, h):
     """
     Mo ta:
