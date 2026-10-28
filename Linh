@@ -38,4 +38,3 @@ def simpson_1_3(f, a, b, n):
             
     I_simpson = (h / 3) * (f(a) + sum1 + sum2 + f(b))  # Dòng 9 Thuật toán 15
     return I_simpson  # Dòng 10 - Thuật toán 15
-
