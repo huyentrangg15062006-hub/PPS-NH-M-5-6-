@@ -35,17 +35,4 @@ def trapezoid_table(x, y):
         h=x[i+1]-x[i]
         area+=0.5*h*(y[i]+y[i+1])
     return area
-#tính gần đúng tích phân (5.11 phiếu bài tập)
-def f(x):
-    return x**5+3*x**3-2
-print('Giá trị gần đúng và cận sai số của tích phân là:',trapezoid(f, 0, 2, 10, 10**-3))
-
-#tính lưu lượng dòng chảy qua mặt cắt sông (ví dụ lấy trong báo cáo cô gửi)
-x=[0, 4, 8, 12, 16, 20, 24, 28, 32, 36, 40]
-y=[0, 1.2, 2.5, 3.6, 4.4, 4.8, 4.6, 3.9, 2.8, 1.5, 0]
-v=0.8 #vận tốc dòng chảy trb
-dien_tich=trapezoid_table(x,y)
-luu_luong=dien_tich*v
-print('diện tích mặt cắt ngang là:', dien_tich)
-print('Lưu lượng dòng chảy là:', luu_luong)
     
