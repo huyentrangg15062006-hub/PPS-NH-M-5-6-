@@ -35,4 +35,3 @@ def trapezoid_table(x, y):
         h=x[i+1]-x[i]
         area+=0.5*h*(y[i]+y[i+1])
     return area
-    
