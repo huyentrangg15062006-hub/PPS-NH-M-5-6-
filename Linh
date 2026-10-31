@@ -45,6 +45,6 @@ def simpson(f, a: float, b: float, n: int, M4: float) -> tuple[float, float]:
             sum2 += f(x(i)) # Dòng 6 - Thuật toán 16
         
     I_Simpson = (h / 3) * (f(a) + 2 * sum1 + 4 * sum2 + f(b))  # Dòng 9 - Thuật toán 16
-    E = (M4 * (b - a)**5) / (180 * (n**4)) 
+    E = (M4 * (b - a) * h**4) 180
     return I_Simpson, E  # Dòng 10 - Thuật toán 16
 
