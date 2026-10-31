@@ -1,115 +1,156 @@
-
 import numpy as np
 import numbers
 
-
-# 1. Kiem tra dieu kien bien
+# 1. Kiểm tra điều kiện biên
 def check_bounds(a, b):
+    """
+    Kiểm tra hai cận tích phân.
+    Require:
+        a, b: Hai cận tích phân.
+    Ensure:
+        a và b là số hữu hạn, a < b.
+    """
     if not isinstance(a, numbers.Real) or not isinstance(b, numbers.Real):
-        raise TypeError("Can tich phan phai la so.")
-
+        raise TypeError("Hai cận tích phân phải là số.")
     if not np.isfinite(a) or not np.isfinite(b):
-        raise ValueError("Can tich phan phai huu han.")
-
+        raise ValueError("Hai cận tích phân phải là số hữu hạn.")
     if a >= b:
-        raise ValueError("Can duoi phai nho hon can tren.")
+        raise ValueError("Cận dưới phải nhỏ hơn cận trên.")
 
-
-# 2. Kiem tra so khoang chia
+# 2. Kiểm tra số khoảng chia
 def check_n(n):
+    """
+    Kiểm tra số khoảng chia.
+    Require:
+        n: Số nguyên biểu thị số khoảng chia.
+    Ensure:
+        n là số nguyên và n >= 2.
+    """
     if not isinstance(n, numbers.Integral) or isinstance(n, bool):
-        raise TypeError("n phai la so nguyen.")
-
+        raise TypeError("n phải là số nguyên.")
     if n < 2:
-        raise ValueError("n phai lon hon hoac bang 2.")
+        raise ValueError("n phải lớn hơn hoặc bằng 2.")
 
-
-# 3. Cong thuc Simpson 1/3
-def simpson13(f, a, h, start, end):
-    n = end - start
-
-    if n <= 0 or n % 2 != 0:
-        raise ValueError("Simpson 1/3 can so khoang chia chan.")
-
-    s = f(a + start * h) + f(a + end * h)
-
-    for i in range(start + 1, end):
-        x = a + i * h
-
-        if (i - start) % 2 == 1:
-            s += 4 * f(x)
-        else:
-            s += 2 * f(x)
-
-    return h * s / 3
-
-
-# 4. Cong thuc Simpson 3/8
-def simpson38(f, a, h, start):
-    x0 = a + start * h
-    x1 = a + (start + 1) * h
-    x2 = a + (start + 2) * h
-    x3 = a + (start + 3) * h
-
+# 3. Công thức Simpson 3/8
+def simpson38(f, a, b):
+    """
+    Tính tích phân xác định bằng công thức Simpson 3/8 đơn.
+    Chia đoạn [a, b] thành 3 khoảng bằng nhau và áp dụng công thức Simpson 3/8.
+    Require:
+        f: Hàm số cần tính tích phân.
+        a: Cận dưới.
+        b: Cận trên.
+    Ensure:
+        Trả về giá trị gần đúng của tích phân trên [a, b].
+    """
+    check_bounds(a, b)
+    h = (b - a) / 3
     return 3 * h / 8 * (
-        f(x0) + 3 * f(x1) + 3 * f(x2) + f(x3)
+        f(a) + 3 * f(a + h)
+        + 3 * f(a + 2 * h) + f(b)
     )
 
-
-# 5. Tinh tich phan bang Simpson
+# 4. Kết hợp Simpson 3/8 và Simpson 1/3
 def simpson_mixed(f, a, b, n):
+    """
+    Tính tích phân bằng phương pháp Simpson kết hợp.
+    Nếu n chẵn, sử dụng Simpson 1/3.
+    Nếu n lẻ, sử dụng Simpson 3/8 cho 3 khoảng đầu
+    Require:
+        f: Hàm số cần tính tích phân.
+        a: Cận dưới.
+        b: Cận trên.
+        n: Số khoảng chia.
+
+    Ensure:
+        Trả về giá trị gần đúng của tích phân trên [a, b].
+        và Simpson 1/3 cho các khoảng còn lại.
+    """
     check_bounds(a, b)
     check_n(n)
-
     h = (b - a) / n
 
-    # Truong hop n chan: Simpson 1/3
+    # Trường hợp n chẵn: sử dụng Simpson 1/3
     if n % 2 == 0:
-        return simpson13(f, a, h, 0, n)
+        s = f(a) + f(b)
+        for i in range(1, n):
+            if i % 2 == 1:
+                s += 4 * f(a + i * h)
+            else:
+                s += 2 * f(a + i * h)
+        return h * s / 3
 
-    # Truong hop n = 3: Simpson 3/8
-    if n == 3:
-        return simpson38(f, a, h, 0)
-
-    # Truong hop n le va n > 3:
-    # 3 khoang dau dung Simpson 3/8
-    # Cac khoang con lai dung Simpson 1/3
-    return (
-        simpson38(f, a, h, 0)
-        + simpson13(f, a, h, 3, n)
+    # Trường hợp n lẻ: sử dụng Simpson 3/8 cho 3 khoảng đầu
+    result = 3 * h / 8 * (
+        f(a) + 3 * f(a + h)
+        + 3 * f(a + 2 * h) + f(a + 3 * h)
     )
 
+    # Các khoảng còn lại sử dụng Simpson 1/3
+    if n > 3:
+        s = f(a + 3 * h) + f(b)
+        for i in range(4, n):
+            if (i - 3) % 2 == 1:
+                s += 4 * f(a + i * h)
+            else:
+                s += 2 * f(a + i * h)
+        result += h * s / 3
+    return result
 
-# 6. Tinh tich phan tu bang gia tri bang cach
+# 5. Tính tích phân từ bảng dữ liệu (xs, ys)
 def simpson_table(xs, ys):
+    """
+    Tính tích phân xác định từ bảng giá trị.
+    Nếu số khoảng chia chẵn, sử dụng Simpson 1/3.
+    Nếu số khoảng chia lẻ, kết hợp Simpson 3/8 và 1/3.
+    Require:
+        xs: Mảng chứa các giá trị của biến x.
+        ys: Mảng chứa các giá trị tương ứng của hàm số f(x).
+    Ensure:
+        Trả về giá trị gần đúng của tích phân.
+        Các giá trị x phải tăng đều và hai mảng có cùng độ dài.
+    """
     xs = np.asarray(xs, dtype=float)
     ys = np.asarray(ys, dtype=float)
-
     if xs.ndim != 1 or ys.ndim != 1:
-        raise ValueError("Du lieu phai la mang mot chieu.")
-
+        raise ValueError("xs và ys phải là mảng một chiều.")
     if len(xs) != len(ys):
-        raise ValueError("Hai mang phai co cung so phan tu.")
+        raise ValueError("xs và ys phải có cùng số phần tử.")
 
     if len(xs) < 3:
-        raise ValueError("Can it nhat 3 diem du lieu.")
-
+        raise ValueError("Cần ít nhất 3 điểm dữ liệu.")
     if not np.all(np.isfinite(xs)) or not np.all(np.isfinite(ys)):
-        raise ValueError("Du lieu phai la cac so huu han.")
-
+        raise ValueError("Dữ liệu phải là các số hữu hạn.")
     h_values = np.diff(xs)
-
     if np.any(h_values <= 0):
-        raise ValueError("Cac gia tri x phai tang dan.")
-
+        raise ValueError("Các giá trị xs phải tăng dần.")
     if not np.allclose(h_values, h_values[0]):
-        raise ValueError("Cac khoang chia phai bang nhau.")
-
+        raise ValueError("Các khoảng chia phải bằng nhau.")
     n = len(xs) - 1
     h = h_values[0]
 
-    def f(x):
-        index = round((x - xs[0]) / h)
-        return ys[index]
+    # Trường hợp n chẵn: sử dụng Simpson 1/3
+    if n % 2 == 0:
+        s = ys[0] + ys[n]
+        for i in range(1, n):
+            if i % 2 == 1:
+                s += 4 * ys[i]
+            else:
+                s += 2 * ys[i]
+        return h * s / 3
 
-    return simpson_mixed(f, xs[0], xs[-1], n)
+    # Trường hợp n lẻ: Simpson 3/8 cho 3 khoảng đầu
+    result = 3 * h / 8 * (
+        ys[0] + 3 * ys[1] + 3 * ys[2] + ys[3]
+    )
+
+    # Các khoảng còn lại sử dụng Simpson 1/3
+    if n > 3:
+        s = ys[3] + ys[n]
+        for i in range(4, n):
+            if (i - 3) % 2 == 1:
+                s += 4 * ys[i]
+            else:
+                s += 2 * ys[i]
+        result += h * s / 3
+    return result
