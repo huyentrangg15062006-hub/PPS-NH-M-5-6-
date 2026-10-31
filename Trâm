@@ -1,4 +1,16 @@
 import numpy as np
+def check_boundary(a, b, f=None):
+    if not np.isfinite(a) or not np.isfinite(b):
+        raise ValueError("Can a va b phai huu han.")
+
+    if a >= b:
+        raise ValueError("Can phai thoa man a < b.")
+
+    if f is not None:
+        for x in [a, b]:
+            y = f(x)
+            if not np.isfinite(y):
+                raise ValueError("Gia tri ham tai bien khong hop le.")
 def simpson38(f, a, b):
     """
     Mo ta:
