@@ -1,5 +1,148 @@
-<<<<<<< HEAD
-Code phiên bản của bạn
-=======
-Code phiên bản từ GitHub
->>>>>>> tên-nhánh
+import numpy as np
+import numbers
+# 1. Kiểm tra điều kiện biên
+def check_bounds(a, b):
+    """
+    Kiểm tra hai cận tích phân.
+    Require:
+        a, b: Hai cận tích phân.
+    Ensure:
+        a và b là số hữu hạn, a < b.
+    """
+    if not isinstance(a, numbers.Real) or not isinstance(b, numbers.Real):
+        raise TypeError("Hai cận tích phân phải là số.")
+    if not np.isfinite(a) or not np.isfinite(b):
+        raise ValueError("Hai cận tích phân phải là số hữu hạn.")
+    if a >= b:
+        raise ValueError("Cận dưới phải nhỏ hơn cận trên.")
+
+# 2. Kiểm tra số khoảng chia
+def check_n(n):
+    """
+    Kiểm tra số khoảng chia.
+    Require:
+        n: Số nguyên biểu thị số khoảng chia.
+    Ensure:
+        n là số nguyên và n >= 3.
+    """
+    if not isinstance(n, numbers.Integral) or isinstance(n, bool):
+        raise TypeError("n phải là số nguyên.")
+    if n < 2:
+        raise ValueError("n phải lớn hơn hoặc bằng 3.")
+
+# 3. Công thức Simpson 3/8
+def simpson38(f, a, b):
+    """
+    Tính tích phân xác định bằng công thức Simpson 3/8 đơn.
+    Chia đoạn [a, b] thành 3 khoảng bằng nhau và áp dụng công thức Simpson 3/8.
+    Require:
+        f: Hàm số cần tính tích phân.
+        a: Cận dưới.
+        b: Cận trên.
+    Ensure:
+        Trả về giá trị gần đúng của tích phân trên [a, b].
+    """
+    check_bounds(a, b)
+    h = (b - a) / 3
+    return 3 * h / 8 * ( f(a) + 3 * f(a + h) + 3 * f(a + 2 * h) + f(b) )
+
+# 4. Kết hợp Simpson 3/8 và Simpson 1/3
+def simpson_mixed(f, a, b, n):
+    """
+    Tính tích phân bằng phương pháp Simpson kết hợp.
+    Nếu n chẵn, sử dụng Simpson 1/3.
+    Nếu n lẻ, sử dụng Simpson 3/8 cho 3 khoảng đầu
+    Require:
+        f: Hàm số cần tính tích phân.
+        a: Cận dưới.
+        b: Cận trên.
+        n: Số khoảng chia.
+
+    Ensure:
+        Trả về giá trị gần đúng của tích phân trên [a, b].
+        và Simpson 1/3 cho các khoảng còn lại.
+    """
+    check_bounds(a, b)
+    check_n(n)
+    h = (b - a) / n
+    # Trường hợp n chẵn: sử dụng Simpson 1/3
+    if n % 2 == 0:
+        s = f(a) + f(b)
+
+        for i in range(1, n):
+            if i % 2 == 1:
+                s += 4 * f(a + i * h)
+            else:
+                s += 2 * f(a + i * h)
+        return h * s / 3
+
+    # Trường hợp n lẻ: sử dụng Simpson 3/8 cho 3 khoảng đầu
+    result = 3 * h / 8 * ( f(a) + 3 * f(a + h) + 3 * f(a + 2 * h) + f(a + 3 * h) )
+
+    # Các khoảng còn lại sử dụng Simpson 1/3
+    if n > 3:
+        s = f(a + 3 * h) + f(b)
+        for i in range(4, n):
+            if (i - 3) % 2 == 1:
+                s += 4 * f(a + i * h)
+            else:
+                s += 2 * f(a + i * h)
+        result += h * s / 3
+    return result
+
+# 5. Tính tích phân từ bảng dữ liệu (xs, ys)
+def simpson_table(xs, ys):
+    """
+    Tính tích phân xác định từ bảng giá trị.
+
+    Require:
+        xs: Mảng chứa các giá trị của biến x.
+        ys: Mảng chứa các giá trị tương ứng của hàm số f(x).
+
+    Ensure:
+        Trả về giá trị gần đúng của tích phân.
+        Các giá trị x phải tăng đều và hai mảng có cùng độ dài.
+
+    Algorithm:
+        Nếu số khoảng chia chẵn, sử dụng Simpson 1/3.
+        Nếu số khoảng chia lẻ, kết hợp Simpson 3/8 và 1/3.
+    """
+    xs = np.asarray(xs, dtype=float)
+    ys = np.asarray(ys, dtype=float)
+    if xs.ndim != 1 or ys.ndim != 1:
+        raise ValueError("xs và ys phải là mảng một chiều.")
+    if len(xs) != len(ys):
+        raise ValueError("xs và ys phải có cùng số phần tử.")
+    if len(xs) < 3:
+        raise ValueError("Cần ít nhất 3 điểm dữ liệu.")
+    if not np.all(np.isfinite(xs)) or not np.all(np.isfinite(ys)):
+        raise ValueError("Dữ liệu phải là các số hữu hạn.")
+    h_values = np.diff(xs)
+    if np.any(h_values <= 0):
+        raise ValueError("Các giá trị xs phải tăng dần.")
+    if not np.allclose(h_values, h_values[0]):
+        raise ValueError("Các khoảng chia phải bằng nhau.")
+    n = len(xs) - 1
+    h = h_values[0]
+    # Trường hợp n chẵn: sử dụng Simpson 1/3
+    if n % 2 == 0:
+        s = ys[0] + ys[n]
+        for i in range(1, n):
+            if i % 2 == 1:
+                s += 4 * ys[i]
+            else:
+                s += 2 * ys[i]
+        return h * s / 3
+    # Trường hợp n lẻ: Simpson 3/8 cho 3 khoảng đầu
+    result = 3 * h / 8 * ( ys[0] + 3 * ys[1] + 3 * ys[2] + ys[3] )
+      # Các khoảng còn lại sử dụng Simpson 1/3
+    if n > 3:
+        s = ys[3] + ys[n]
+        for i in range(4, n):
+            if (i - 3) % 2 == 1:
+                s += 4 * ys[i]
+            else:
+                s += 2 * ys[i]
+        result += h * s / 3
+    return result
+

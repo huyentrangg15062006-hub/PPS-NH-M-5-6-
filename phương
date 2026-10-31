@@ -14,7 +14,7 @@ def midpoint(f, a, b, n, M2) -> tuple[float, float]: #(I, E)
     if not callable(f):
         raise(Exception('tham so f phai la mot ham so hop le'))
     if a >= b:
-        raise(Exception('can duoi a phai nho hon can tren a'))
+        raise(Exception('can duoi a phai nho hon can tren b'))
     if not isinstance(n, int):
         raise(Exception('so khoang chia n phai la so nguyen duong'))
     if M2<0:
