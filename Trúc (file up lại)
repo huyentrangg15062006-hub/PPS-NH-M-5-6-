@@ -12,8 +12,9 @@ Ensure:
 '''
 def trapezoid(f, a, b, n, M2): 
   if n<=0:
-        print('Số khoảng chia phải lớn hơn 0')
-        return None
+        raise ValueError('Số khoảng chia phải lớn hơn 0')
+  if a >= b:
+        raise ValueError('Cận dưới a phải nhỏ hơn cận trên b')
   sum=0
   h=(b-a)/n #dòng 1 thuật toán 14
   for i in range(1,n):
