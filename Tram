@@ -94,7 +94,8 @@ def simpson_mixed(f, a, b, n):
 def simpson_table(xs, ys):
     """
     Tính tích phân xác định từ bảng giá trị.
-
+    Nếu số khoảng chia chẵn, sử dụng Simpson 1/3.
+    Nếu số khoảng chia lẻ, kết hợp Simpson 3/8 và 1/3.
     Require:
         xs: Mảng chứa các giá trị của biến x.
         ys: Mảng chứa các giá trị tương ứng của hàm số f(x).
@@ -103,9 +104,6 @@ def simpson_table(xs, ys):
         Trả về giá trị gần đúng của tích phân.
         Các giá trị x phải tăng đều và hai mảng có cùng độ dài.
 
-    Algorithm:
-        Nếu số khoảng chia chẵn, sử dụng Simpson 1/3.
-        Nếu số khoảng chia lẻ, kết hợp Simpson 3/8 và 1/3.
     """
     xs = np.asarray(xs, dtype=float)
     ys = np.asarray(ys, dtype=float)
