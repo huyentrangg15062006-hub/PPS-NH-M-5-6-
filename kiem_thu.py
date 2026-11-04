@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-# IMPORT TOÀN BỘ CÁC HÀM TỪ FILE THUẬT TOÁN CỦA NHÓM (thuattoan.py)
+# IMPORT TOÀN BỘ CÁC HÀM TỪ FILE THUẬT TOÁN CỦA NHÓM (thuat_toan.py)
 from thuat_toan import (
     midpoint, 
     trapezoid, 
@@ -39,16 +39,16 @@ def exact_nhom_tu_chon():
 # 1. KIỂM THỬ PHƯƠNG PHÁP HÌNH CHỮ NHẬT TRUNG TÂM (MIDPOINT)
 # ==============================================================================
 def test_midpoint_r7_1_vi_du_bai_giang():
-    """[R7 - Ca 1]: Ví dụ giáo trình (Ví dụ 5.3 và Ví dụ bổ sung) cho Midpoint[cite: 1]."""
+    """[R7 - Ca 1]: Ví dụ giáo trình (Ví dụ 5.3 và Ví dụ bổ sung) cho Midpoint."""
     print("\n--- [R7 - Ca 1: Ví dụ giáo trình cho Midpoint] ---")
     
-    # Ví dụ 5.3: n = 10, M2 = 2.0[cite: 1]
+    # Ví dụ 5.3: n = 10, M2 = 2.0
     I_53, E_53 = midpoint(f_bai_5_3, 0.0, 1.0, 10, M2=2.0)
     true_53 = exact_bai_5_3()
     print(f"  + Ví dụ 5.3 (n=10): I_midpoint = {I_53:.6f} | Nghiệm đúng = {true_53:.6f} | Cận sai số = {E_53:.2e}")
     assert pytest.approx(I_53, abs=1e-3) == 0.692835
 
-    # Ví dụ bổ sung: n = 10, M2 = 2.0[cite: 1]
+    # Ví dụ bổ sung: n = 10, M2 = 2.0
     I_bs, E_bs = midpoint(f_vi_du_bo_sung, 0.0, 1.0, 10, M2=2.0)
     print(f"  + Ví dụ bổ sung (n=10): I_midpoint = {I_bs:.6f} | Cận sai số = {E_bs:.2e}")
     assert pytest.approx(I_bs, abs=1e-3) == 0.747131
@@ -69,7 +69,7 @@ def test_midpoint_r7_2_vi_du_nhom_tu_chon():
 
 
 def test_midpoint_r7_3_ca_bien():
-    """[R7 - Ca 3]: Ca biên (Cận dưới >= cận trên, n âm) cho Midpoint[cite: 1, 2]."""
+    """[R7 - Ca 3]: Ca biên (Cận dưới >= cận trên, n âm) cho Midpoint."""
     print("\n--- [R7 - Ca 3: Kiểm tra các ca biên cho Midpoint] ---")
     with pytest.raises(Exception):
         midpoint(f_bai_5_3, 1.0, 0.0, 10, 2.0)  # Cận a > b
@@ -82,7 +82,7 @@ def test_midpoint_r7_3_ca_bien():
 # 2. KIỂM THỬ PHƯƠNG PHÁP HÌNH THANG (TRAPEZOID)
 # ==============================================================================
 def test_trapezoid_r7_1_vi_du_bai_giang():
-    """[R7 - Ca 1]: Ví dụ giáo trình (Ví dụ 5.3 và Ví dụ bổ sung) cho Trapezoid[cite: 1]."""
+    """[R7 - Ca 1]: Ví dụ giáo trình (Ví dụ 5.3 và Ví dụ bổ sung) cho Trapezoid."""
     print("\n--- [R7 - Ca 1: Ví dụ giáo trình cho Trapezoid] ---")
     
     I_53, E_53 = trapezoid(f_bai_5_3, 0.0, 1.0, 10, M2=2.0)
@@ -109,7 +109,7 @@ def test_trapezoid_r7_2_vi_du_nhom_tu_chon():
 
 
 def test_trapezoid_r7_3_ca_bien():
-    """[R7 - Ca 3]: Ca biên (n <= 0) cho Trapezoid[cite: 1, 2]."""
+    """[R7 - Ca 3]: Ca biên (n <= 0) cho Trapezoid."""
     print("\n--- [R7 - Ca 3: Kiểm tra các ca biên cho Trapezoid] ---")
     with pytest.raises(ValueError):
         trapezoid(f_bai_5_3, 0.0, 1.0, 0, 2.0)  # n = 0
@@ -120,7 +120,7 @@ def test_trapezoid_r7_3_ca_bien():
 # 3. KIỂM THỬ PHƯƠNG PHÁP SIMPSON 1/3 (SIMPSON)
 # ==============================================================================
 def test_simpson_r7_1_vi_du_bai_giang():
-    """[R7 - Ca 1]: Ví dụ giáo trình (Ví dụ 5.3 và Ví dụ bổ sung) cho Simpson 1/3[cite: 1]."""
+    """[R7 - Ca 1]: Ví dụ giáo trình (Ví dụ 5.3 và Ví dụ bổ sung) cho Simpson 1/3."""
     print("\n--- [R7 - Ca 1: Ví dụ giáo trình cho Simpson 1/3] ---")
     
     # M4 cho 1/(1+x) là 24.0
@@ -149,10 +149,10 @@ def test_simpson_r7_2_vi_du_nhom_tu_chon():
 
 
 def test_simpson_r7_3_ca_bien():
-    """[R7 - Ca 3]: Ca biên bắt buộc (Simpson với n lẻ phải báo lỗi)[cite: 1, 2]."""
+    """[R7 - Ca 3]: Ca biên bắt buộc (Simpson với n lẻ phải báo lỗi)."""
     print("\n--- [R7 - Ca 3: Kiểm tra các ca biên cho Simpson 1/3] ---")
     with pytest.raises(ValueError, match="yêu cầu n phải là số chẵn"):
-        simpson(f_bai_5_3, 0.0, 1.0, n=5, M4=24.0)  # n = 5 là số lẻ[cite: 1]
+        simpson(f_bai_5_3, 0.0, 1.0, n=5, M4=24.0)  # n = 5 là số lẻ
     print("  + Ca biên n lẻ (n=5): Đã bắt đúng lỗi yêu cầu n chẵn!")
 
 
@@ -160,15 +160,15 @@ def test_simpson_r7_3_ca_bien():
 # 4. KIỂM THỬ PHƯƠNG PHÁP SIMPSON 3/8, SIMPSON MIXED & VÍ DỤ 5.7
 # ==============================================================================
 def test_simpson_mixed_r7_1_vi_du_5_7():
-    """[R7 - Ca 1]: Ví dụ 5.7 (Bảng số liệu với n = 5 lẻ, kết quả chuẩn 4.1036)[cite: 1, 8]."""
+    """[R7 - Ca 1]: Ví dụ 5.7 (Bảng số liệu với n = 5 lẻ, kết quả chuẩn 4.1036)."""
     print("\n--- [R7 - Ca 1: Kiểm thử Ví dụ 5.7 cho Simpson Mixed (n=5 lẻ)] ---")
     
-    # Dữ liệu bảng số liệu Ví dụ 5.7[cite: 8]
+    # Dữ liệu bảng số liệu Ví dụ 5.7
     xs = [0.0, 0.5, 1.0, 1.5, 2.0, 2.5]
     ys = [1.5000, 2.0000, 2.0000, 1.6364, 1.2500, 0.9565]
     
     res_57 = simpson_table(xs, ys)
-    print(f"  + Ví dụ 5.7 (n=5 lẻ): Kết quả tính được = {res_57:.4f} | Giá trị lý thuyết = 4.1036[cite: 1]")
+    print(f"  + Ví dụ 5.7 (n=5 lẻ): Kết quả tính được = {res_57:.4f} | Giá trị lý thuyết = 4.1036")
     assert pytest.approx(res_57, abs=1e-3) == 4.1036
 
 
@@ -185,7 +185,7 @@ def test_simpson_mixed_r7_2_vi_du_nhom_tu_chon():
 
 
 def test_simpson_mixed_r7_3_ca_bien():
-    """[R7 - Ca 3]: Ca biên cho Simpson Mixed và Simpson 3/8 đơn[cite: 2]."""
+    """[R7 - Ca 3]: Ca biên cho Simpson Mixed và Simpson 3/8 đơn."""
     print("\n--- [R7 - Ca 3: Kiểm tra các ca biên cho Simpson Mixed và 3/8] ---")
     
     # Simpson 3/8 đơn với hàm x^3 trên [0, 3] -> Kết quả đúng = 20.25
