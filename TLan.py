@@ -101,7 +101,6 @@ def simpson(f, a: float, b: float, n: int, M4: float) -> tuple[float, float]:
     # BẮT ĐẦU THUẬT TOÁN
 
     h = (b - a) / n # Dòng 1 - Thuật toán 16: Tính h
-
     # Khởi tạo các biến tổng tích lũy
     sum1 = 0.0 # Tổng các vị trí i chẵn (nhân với 2)
     sum2 = 0.0 # Tổng các vị trí i lẻ (nhân với 4)
@@ -119,9 +118,8 @@ def simpson(f, a: float, b: float, n: int, M4: float) -> tuple[float, float]:
     I_Simpson = (h / 3) * (f(a) + 2 * sum1 + 4 * sum2 + f(b))  # Dòng 9 - Thuật toán 16
     E = (M4 * (b - a) * h**4) / 180
     return I_Simpson, E  # Dòng 10 - Thuật toán 16
-
-import numpy as np
-def f(x):
+#SV6
+def f(x : float) -> float:
   """Hàm dưới dấu tích phân f(x) = 1/(1+x).
   Require: x là số thực , x khác -1
   Ensure : trả về giá trị f(x) .
@@ -129,7 +127,7 @@ def f(x):
   return 1/(1+x)
 
 a,b = 0 , 1 # tích phân trên đoạn [0,1]
-ex_val = np.log(2) #giá trị đúng của tích phân là ln 2
+I_dung = np.log(2) #giá trị đúng của tích phân là ln 2
 M2 = 2 # max |f''(x)| trên đoạn [0,1]
 M4 = 24 # max |f''''(x)| trên đoạn [0,1]
 
@@ -137,7 +135,7 @@ n_val = []
 for i in range (1,11):
   n_val.append(2**i)
 # tạo danh sách lưu các giá trị h , sai số theo n
-h_array = [] # lưu khoảng khi n giảm dần
+ds_h = [] # lưu khoảng khi n giảm dần
 err_mid_actual = [] # sai số thực của HCN
 err_mid_theory = [] # sai số cận lý thuyết của HCN
 err_trap_actual = [] # sai số thực của hthang
@@ -146,19 +144,20 @@ err_simp_actual = [] # sai số thực của simpson
 err_simp_theory = [] # sai số cận lý thuyết của hthang
 # Tạo đầu bảng
 print(" "*30 + "Bảng sai số " )
-print(f"{'n':<6}{'h':<10}{'HCN thuc':<14}{'HCN LT':<14}{'Thang thuc':<14}{'Thang LT':<14}{'Simp thuc':<14}{'Simp LT':<14}")
+print("%-6s %-10s %-12s %-12s %-12s %-12s %-12s %-12s" % 
+      ("n", "h", "HCN thuc", "HCN LT", "Thang thuc", "Thang LT", "Simp thuc", "Simp LT"))
 # Chạy vòng lặp lưu khoảng vào mảng
 for n in n_val:
   h = (b-a)/n
-  h_array.append(h)
+  ds_h.append(h)
   # Gọi hàm
   gttp_mid , canlt_mid = midpoint(f, a, b, n, M2)
   gttp_trap , canlt_trap = trapezoid(f, a, b, n, M2)
   gttp_sim , canlt_sim = simpson(f, a, b, n, M4)
   # Tính sai số thực tế
-  err_mid = abs (gttp_mid - ex_val)
-  err_trap = abs (gttp_trap - ex_val)
-  err_sim = abs(gttp_sim - ex_val)
+  err_mid = abs (gttp_mid - I_dung)
+  err_trap = abs (gttp_trap - I_dung)
+  err_sim = abs(gttp_sim - I_dung)
   # Lưu mảng
   err_mid_actual.append(err_mid)
   err_mid_theory.append(canlt_mid)
@@ -167,21 +166,21 @@ for n in n_val:
   err_simp_actual.append(err_sim)
   err_simp_theory.append(canlt_sim)
   # In ra bảng sai số
-  print(f"{n:<6}{h:<10.6f}{err_mid:<14.6f}{canlt_mid:<14.6f}{err_trap:<14.6f}{canlt_trap:<14.6f}{err_sim:<14.6f}{canlt_sim:<14.6f}")
+  print("%-6d %-10.6f %-12.6f %-12.6f %-12.6f %-12.6f %-12.6f %-12.6f" % (n, h, err_mid, canlt_mid, err_trap, canlt_trap, err_sim, canlt_sim))
 
 # Vẽ đồ thị
 # Kiểm tra số lượng phần tử trong list
-print(len(h_array), len(err_mid_actual), len(err_simp_theory))
+print(len(ds_h), len(err_mid_actual), len(err_simp_theory))
 # Vẽ đồ thị
 import matplotlib.pyplot as plt
 plt.figure(figsize=(9,5))
-plt.loglog(h_array, err_mid_actual,  'o-',color = 'pink', label='Sai số thực HCN - $O(h^2)$')
-plt.loglog(h_array, err_trap_actual, 's-',color = 'black', label='Sai số thực Hình thang - $O(h^2)$')
-plt.loglog(h_array, err_simp_actual, '^-', color = 'blue', label='Sai số thực Simpson - $O(h^4)$')
+plt.loglog(ds_h, err_mid_actual,  'o-',color = 'pink', label='Sai số thực HCN - $O(h^2)$')
+plt.loglog(ds_h, err_trap_actual, 's-',color = 'black', label='Sai số thực Hình thang - $O(h^2)$')
+plt.loglog(ds_h, err_simp_actual, '^-', color = 'blue', label='Sai số thực Simpson - $O(h^4)$')
 # Cận LT
-plt.loglog(h_array, err_mid_theory,  'o--',color = 'green', label='Cận lý thuyết HCN')
-plt.loglog(h_array, err_trap_theory, 's--',color = 'red', label='Cận lý thuyết Hình thang')
-plt.loglog(h_array, err_simp_theory, '^--',color = 'orange', label='Cận lý thuyết Simpson')
+plt.loglog(ds_h, err_mid_theory,  'o--',color = 'green', label='Cận lý thuyết HCN')
+plt.loglog(ds_h, err_trap_theory, 's--',color = 'red', label='Cận lý thuyết Hình thang')
+plt.loglog(ds_h, err_simp_theory, '^--',color = 'orange', label='Cận lý thuyết Simpson')
 # Note
 plt.xlabel('Bước lưới h ')
 plt.ylabel('Sai số tuyệt đối')
@@ -203,15 +202,15 @@ print("So sánh sai số thực với cận lý thuyết ")
 # Chạy vòng lặp lưu khoảng vào mảng
 for n in n_val:
   h = (b-a)/n
-  h_array.append(h)
+  ds_h.append(h)
   # Gọi hàm
   gttp_mid , canlt_mid = midpoint(f, a, b, n, M2)
   gttp_trap , canlt_trap = trapezoid(f, a, b, n, M2)
   gttp_sim , canlt_sim = simpson(f, a, b, n, M4)
   # Tính sai số thực tế
-  err_mid = abs (gttp_mid - ex_val)
-  err_trap = abs (gttp_trap - ex_val)
-  err_sim = abs(gttp_sim - ex_val)
+  err_mid = abs (gttp_mid - I_dung)
+  err_trap = abs (gttp_trap - I_dung)
+  err_sim = abs(gttp_sim - I_dung)
   # Lưu mảng
   err_mid_actual.append(err_mid)
   err_mid_theory.append(canlt_mid)
@@ -220,7 +219,8 @@ for n in n_val:
   err_simp_actual.append(err_sim)
   err_simp_theory.append(canlt_sim)
   #So sánh
-print(f"{'n':<6}{'HCN thực':<14}{'HCN LT':<14}{'Thang thực':<14}{'Thang LT':<14}{'Simp thực':<14}{'Simp LT':<14}{'Sai số thực<=Cận lý thuyết':<12}")
+print("%-6s %-10s %-12s %-12s %-12s %-12s %-12s %-12s" % 
+      ("n", "h", "HCN thuc", "HCN LT", "Thang thuc", "Thang LT", "Simp thuc", "Simp LT"))
 for k in range(len(n_val)):
     if err_mid_actual[k] <= err_mid_theory[k] and err_trap_actual[k] <= err_trap_theory[k] and err_simp_actual[k] <= err_simp_theory[k]:
         ket_luan = "Đúng"
