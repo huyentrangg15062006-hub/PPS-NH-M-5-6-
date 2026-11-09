@@ -1,7 +1,7 @@
 import numbers
 import numpy as np
 
-#P1: Phương pháp hình chữ nhật trung tâm
+#P1: Phương pháp hình chữ nhật trung tâm (midpoint)
 def midpoint(f, a, b, n, M2) -> tuple[float, float]: #(I, E)
     """
     tên thuật toán: Phương pháp hình chữ nhật trung tâm kèm cận sai số
