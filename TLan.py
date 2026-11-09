@@ -143,7 +143,7 @@ err_trap_theory = [] # sai số cận lý thuyết của hthag
 err_simp_actual = [] # sai số thực của simpson
 err_simp_theory = [] # sai số cận lý thuyết của hthang
 # Tạo đầu bảng
-print(" "*30 + "Bảng sai số " )
+print(" "*32 + "Bảng sai số " )
 print("%-6s %-10s %-12s %-12s %-12s %-12s %-12s %-12s" % 
       ("n", "h", "HCN thuc", "HCN LT", "Thang thuc", "Thang LT", "Simp thuc", "Simp LT"))
 # Chạy vòng lặp lưu khoảng vào mảng
@@ -190,53 +190,40 @@ plt.legend(fontsize=9, loc='lower right')
 
 # Kiểm chứng bậc O(h^2) , O(h^2) , O(h^4)
 print("\nBậc hội tụ thực nghiệm p = log2(ex_n / ex_2n)")
-print(f"{'n ->2n':<12}{'HCN':<10}{'Thang':<10}{'Simpson':<10}")
+print("%-14s %-12s %-12s %-12s" % ("n -> 2n", "HCN", "Thang", "Simpson"))
 for k in range(len(n_val) - 1):
     p_mid = np.log2(err_mid_actual[k] / err_mid_actual[k + 1])
     p_trap = np.log2(err_trap_actual[k] / err_trap_actual[k + 1])
     p_simp = np.log2(err_simp_actual[k] / err_simp_actual[k + 1])
-    print(f"{n_val[k]:<3}->{n_val[k + 1]:<6}{p_mid:<10.6f}{p_trap:<10.6f}{p_simp:<10.6f}")
+    buoc_n = "%d -> %d" % (n_val[k], n_val[k + 1])
+    print("%-14s %-12.6f %-12.6f %-12.6f" % (buoc_n, p_mid, p_trap, p_simp))
 #So sánh sai số thực với cận lý thuyết
-print(" ")
-print("So sánh sai số thực với cận lý thuyết ")
+print("\n So sánh sai số thực với cận lý thuyết ")
+print("%-6s %-10s %-12s %-12s %-12s %-12s %-12s %-12s %-12s" %
+("n", "h", "HCN thuc", "HCN LT", "Thang thuc", "Thang LT","Simp thuc", "Simp LT", "Ket luan"))
 # Chạy vòng lặp lưu khoảng vào mảng
-for n in n_val:
-  h = (b-a)/n
-  ds_h.append(h)
-  # Gọi hàm
-  gttp_mid , canlt_mid = midpoint(f, a, b, n, M2)
-  gttp_trap , canlt_trap = trapezoid(f, a, b, n, M2)
-  gttp_sim , canlt_sim = simpson(f, a, b, n, M4)
-  # Tính sai số thực tế
-  err_mid = abs (gttp_mid - I_dung)
-  err_trap = abs (gttp_trap - I_dung)
-  err_sim = abs(gttp_sim - I_dung)
-  # Lưu mảng
-  err_mid_actual.append(err_mid)
-  err_mid_theory.append(canlt_mid)
-  err_trap_actual.append(err_trap)
-  err_trap_theory.append(canlt_trap)
-  err_simp_actual.append(err_sim)
-  err_simp_theory.append(canlt_sim)
-  #So sánh
-print("%-6s %-10s %-12s %-12s %-12s %-12s %-12s %-12s" % 
-      ("n", "h", "HCN thuc", "HCN LT", "Thang thuc", "Thang LT", "Simp thuc", "Simp LT"))
 for k in range(len(n_val)):
-    if err_mid_actual[k] <= err_mid_theory[k] and err_trap_actual[k] <= err_trap_theory[k] and err_simp_actual[k] <= err_simp_theory[k]:
+    n = n_val[k]
+    h = (b-a)/n
+    ds_h.append(h)
+    if (err_mid_actual[k] <= err_mid_theory[k] and err_trap_actual[k] <= err_trap_theory[k] and err_simp_actual[k] <= err_simp_theory[k]):
         ket_luan = "Đúng"
     else:
         ket_luan = "VI PHẠM"
-    print(f"{n_val[k]:<6}{err_mid_actual[k]:<14.6f}{err_mid_theory[k]:<14.6f}{err_trap_actual[k]:<14.6f}{err_trap_theory[k]:<14.6f}{err_simp_actual[k]:<14.6f}{err_simp_theory[k]:<14.6f}{ket_luan:<12}")
-
+    print("%-6d %-10.6f %-12.6f %-12.6f %-12.6f %-12.6f %-12.6f %-12.6f %-12s" %
+(n_val[k], ds_h[k], err_mid_actual[k], err_mid_theory[k],
+err_trap_actual[k], err_trap_theory[k],
+err_simp_actual[k], err_simp_theory[k], ket_luan))
 # Kiểm chứng (2*I_hcn + I_hthag)/3 = Simpson (2n)
-print('\n Kiểm chứng (2*I_hcn + I_hthag)/3 = Simpson(2n) ')
-print(f"{'n':<8}{'(2*HCN+Thang)/3':<20}{'Simpson 2n':<20}{'Sai khac':<12}")
-sai_khac_max = 0
+print("%-8s %-20s %-20s %-12s" % ("n", "(2*HCN+Thang)/3", "Simpson 2n", "Sai khac"))
+sai_khac_max = 0.0
 for n in n_val:
-    h = (b-a)/n
-    gttp_mid , canlt_mid = midpoint(f, a, b, n, M2)
-    gttp_trap , canlt_trap = trapezoid(f, a, b, n, M2)
-    gttp_sim , canlt_sim = simpson(f, a, b, 2* n, M4)
-    gttp_lamtron = (2*gttp_mid + gttp_trap)/3
-    print(f'{n:<8}{gttp_lamtron :<20.6f}{gttp_sim:<20.6f}{abs(gttp_lamtron - gttp_sim):<12.6f}')
-
+    gttp_mid, canlt_mid = midpoint(f, a, b, n, M2)
+    gttp_trap, canlt_trap = trapezoid(f, a, b, n, M2)
+    gttp_sim, canlt_sim = simpson(f, a, b, 2 * n, M4)
+    gttp_tohop = (2 * gttp_mid + gttp_trap) / 3
+    sai_khac = abs(gttp_tohop - gttp_sim)
+if sai_khac > sai_khac_max:
+   sai_khac_max = sai_khac
+print("%-8d %-20.6f %-20.6f %-12.6f" % (n, gttp_tohop, gttp_sim, sai_khac))
+print("Sai khác lớn nhất: %.6f" % sai_khac_max)
