@@ -1,0 +1,31 @@
+
+
+import numpy as np
+
+from thuat_toan import trapezoid_table, simpson_table
+
+# Du lieu bai toan 1
+x = np.array([0, 4, 8, 12, 16, 20, 24, 28, 32, 36, 40])
+
+d = np.array([0, 1.2, 2.5, 3.6, 4.4, 4.8, 4.6, 3.9, 2.8, 1.5, 0])
+
+v = 0.8
+
+# Phuong phap hinh thang
+A1 = trapezoid_table(x, d)
+Q1 = A1 * v
+
+# Phuong phap Simpson 1/3
+A2 = simpson_table(x, d)
+Q2 = A2 * v
+
+# Phuong phap Simpson hon hop
+A3 = simpson_table(x[:10], d[:10])
+Q3 = A3 * v
+
+print("KET QUA BAI TOAN UNG DUNG 1")
+print("--------------------------------")
+print(f"Hinh thang: A = {A1:.6f} m2; Q = {Q1:.6f} m3/s")
+print(f"Simpson 1/3: A = {A2:.6f} m2; Q = {Q2:.6f} m3/s")
+print(f"Simpson hon hop: A = {A3:.6f} m2; Q = {Q3:.6f} m3/s")
+
