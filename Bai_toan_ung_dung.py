@@ -1,0 +1,136 @@
+
+
+import numpy as np
+
+from thuat_toan import trapezoid_table, simpson_table
+
+# Du lieu bai toan 1
+x = np.array([0, 4, 8, 12, 16, 20, 24, 28, 32, 36, 40])
+
+d = np.array([0, 1.2, 2.5, 3.6, 4.4, 4.8, 4.6, 3.9, 2.8, 1.5, 0])
+
+v = 0.8
+
+# Phuong phap hinh thang
+A1 = trapezoid_table(x, d)
+Q1 = A1 * v
+
+# Phuong phap Simpson 1/3
+A2 = simpson_table(x, d)
+Q2 = A2 * v
+
+# Phuong phap Simpson hon hop
+A3 = simpson_table(x[:10], d[:10])
+Q3 = A3 * v
+
+print("KET QUA BAI TOAN UNG DUNG 1")
+print("--------------------------------")
+print(f"Hinh thang: A = {A1:.6f} m2; Q = {Q1:.6f} m3/s")
+print(f"Simpson 1/3: A = {A2:.6f} m2; Q = {Q2:.6f} m3/s")
+print(f"Simpson hon hop: A = {A3:.6f} m2; Q = {Q3:.6f} m3/s")
+
+# BÀI TOÁN ỨNG DỤNG 2
+# Tính gần đúng tích phân
+# I = tích phân từ 0 đến 2 của x^6 + 3x^3 - 2
+# ==========================================
+
+
+# Khai báo hàm số
+def f(x):
+    return x**6 + 3*x**3 - 2
+
+# Khai báo các thông số
+a = 0
+b = 2
+n = 10
+
+# Tính các đạo hàm bậc 2 và bậc 4 lớn nhất
+M2 = 516
+M4 = 1440
+
+# Tính giá trị chính xác bằng công thức Newton-Leibniz
+I_chinh_xac = 184/7
+
+# P1: Phương pháp hình chữ nhật trung tâm
+I1, E1 = midpoint(f, a, b, n, M2)
+
+# P2: Phương pháp hình thang
+I2, E2 = trapezoid(f, a, b, n, M2)
+
+# P3: Phương pháp Simpson 1/3
+I3, E3 = simpson(f, a, b, n, M4)
+
+# Tính sai số tuyệt đối thực tế
+sai_so_1 = abs(I1 - I_chinh_xac)
+sai_so_2 = abs(I2 - I_chinh_xac)
+sai_so_3 = abs(I3 - I_chinh_xac)
+
+# In kết quả
+print("===== BAI TOAN UNG DUNG 2 =====")
+print(f"So khoang chia n = {n}")
+print(f"Gia tri chinh xac: {I_chinh_xac:.6f}")
+
+print("\n1. Phuong phap hinh chu nhat trung tam")
+print(f"I1 = {I1:.6f}")
+print(f"Sai so = {sai_so_1:.6f}")
+
+print("\n2. Phuong phap hinh thang")
+print(f"I2 = {I2:.6f}")
+print(f"Sai so = {sai_so_2:.6f}")
+
+print("\n3. Phuong phap Simpson 1/3")
+print(f"I3 = {I3:.6f}")
+print(f"Sai so = {sai_so_3:.6f}")
+
+# BÀI TOÁN ỨNG DỤNG 3
+# ==============================
+
+import math
+
+# Khai báo hàm số
+def f(x):
+    return x * math.log(1 + x)
+
+# Khai báo các thông số
+a = 0
+b = 1
+
+# Các hằng số sai số
+M2 = 2
+M4 = 8
+
+# Tính giá trị chính xác bằng Newton - Leibniz
+I_chinh_xac = 1/4
+
+# P1: Phương pháp hình thang (n = 10)
+n1 = 10
+I1, E1 = trapezoid(f, a, b, n1, M2)
+
+# P2: Phương pháp Simpson 1/3 (n = 10)
+n2 = 10
+I2, E2 = simpson(f, a, b, n2, M4)
+
+# P3: Phương pháp Simpson hỗn hợp (n = 11)
+n3 = 11
+I3 = simpson_mixed(f, a, b, n3)
+
+# Tính sai số tuyệt đối thực tế
+sai_so_1 = abs(I1 - I_chinh_xac)
+sai_so_2 = abs(I2 - I_chinh_xac)
+sai_so_3 = abs(I3 - I_chinh_xac)
+
+# In kết quả
+print("===== BAI TOAN UNG DUNG 3 =====")
+print(f"Gia tri chinh xac: {I_chinh_xac:.6f}")
+
+print("\n1. Phuong phap hinh thang (n = 10)")
+print(f"I1 = {I1:.6f}")
+print(f"Sai so = {sai_so_1:.6f}")
+
+print("\n2. Phuong phap Simpson 1/3 (n = 10)")
+print(f"I2 = {I2:.6f}")
+print(f"Sai so = {sai_so_2:.6f}")
+
+print("\n3. Phuong phap Simpson hon hop (n = 11)")
+print(f"I3 = {I3:.6f}")
+print(f"Sai so = {sai_so_3:.6f}")
