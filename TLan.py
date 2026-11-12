@@ -1,0 +1,229 @@
+import numbers
+import numpy as np
+
+#P1: Phương pháp hình chữ nhật trung tâm
+def midpoint(f, a, b, n, M2) -> tuple[float, float]: #(I, E)
+    """
+    tên thuật toán: Phương pháp hình chữ nhật trung tâm kèm cận sai số
+    require:
+        f: hàm số cần tính tích phân (callable function)
+        a: cận dưới của tích phân (float hoặc int)
+        b: cận trên của tích phân (float hoặc int)
+        n: số khoảng chia (số nguyên dương)
+        M2: chặn trên của giá trị tuyệt đối đạo hàm cấp 2 ( dùng để đánh giá sai số)
+    ensure:
+        tuple(I_rec, E): giá trị xấp xỉ tích phân và cận sai số lí thuyết
+    """
+    #xử lí tình huống biên:
+    if not callable(f):
+        raise(Exception('tham so f phai la mot ham so hop le'))
+    if a >= b:
+        raise(Exception('can duoi a phai nho hon can tren b'))
+    if not isinstance(n, int) or n <= 0:
+        raise(Exception('so khoang chia n phai la so nguyen duong'))
+    if M2<0:
+        raise(Exception('can sai so M2 phai la so ko am'))
+    h = (b-a)/n #dòng 1- thuật toán 13
+    Sum_val = 0.0
+    for i in range(n): #dòng 2 - thuật toán 13
+        midpoint_val = ((a+i*h) + (a + (i+1)*h))/2 #dòng 3 - thuật toán 13
+        Sum_val += f(midpoint_val) #dòng 4 - thuật toán 13
+    I_rec = h*Sum_val #dòng 6 - thuật toán 13
+    E = (M2 * (b-a) * (h**2))/24
+    return I_rec, E #dòng7 - thuật toán 13
+
+#P2: Phương pháp hình thang
+'''
+Require:
+    -f: hàm số cần tính tích phân
+    -a: cận dưới
+    -b: cận trên
+    -n: số khoảng chia (n>0)
+    -M2: chặn trên đạo hàm cấp 2
+    -h: độ rộng khoảng chia
+Ensure:
+    -trả về giá trị tuple[I, E]: giá trị tích phân xấp xỉ I và cận sai số E
+'''
+def trapezoid(f, a, b, n, M2):
+    if n <= 0:
+        raise ValueError('Số khoảng chia phải lớn hơn 0')
+    if a >= b:
+        raise ValueError('Cận dưới a phải nhỏ hơn cận trên b')
+    sum = 0
+    h = (b - a) / n #dòng 1 thuật toán 14
+    for i in range(1, n):
+        sum += f(a + i * h)
+    I = (h / 2) * (f(a) + 2 * sum + f(b)) #dòng 5 thuật toán 14
+    E = M2 * (b - a)**3 / (12 * n**2)
+    return I, E
+'''
+Require:
+    -x: danh sách mảng dữ liệu x
+    -y: danh sách mảng dữ lệu y
+    -h: độ rộng khoảng chia
+Ensure:
+    -trả về giá trị area: tổng diện tích bề mặt cắt ngang xấp xỉ tính được
+'''
+def trapezoid_table(x, y):
+    area=0
+    for i in range(len(x)-1):
+        h=x[i+1]-x[i]
+        area+=0.5*h*(y[i]+y[i+1])
+    return area
+
+#P3: Simpson 1/3
+def simpson(f, a: float, b: float, n: int, M4: float) -> tuple[float, float]:
+    """
+    Thuật toán 16: Tính tích phân xác định bằng phương pháp Simpson 1/3.
+
+    Require (Đầu vào):
+        f (callable): Hàm số f(x) liên tục trên [a, b].
+        a (float): Cận dưới tích phân.
+        b (float): Cận trên tích phân.
+        n (int,  n >= 2): Số khoảng chia n chẵn.
+        M4 (float): Chặn trên đạo hàm bậc 4 của f(x) trên [a, b].
+
+    Ensure (Đầu ra):
+        tuple[float, float]: (I_Simpson, E) trong đó:
+            - I_Simpson (float): Giá trị tích phân xấp xỉ.
+            - E (float): Cận sai số lý thuyết.
+    """
+    # Kiểm tra điều kiện biên
+    if n <= 0:
+        raise ValueError("Lỗi biên: Số đoạn chia n phải là số nguyên dương.")
+    if n % 2 != 0:
+        raise ValueError(f"Lỗi biên: Phương pháp Simpson yêu cầu n phải là số chẵn .")
+    if M4 < 0:
+        raise ValueError("Lỗi biên: Chặn trên đạo hàm M4 không thể âm.")
+    if a > b:
+        raise ValueError("Lỗi biên: Cận dưới a không thể lớn hơn cận trên b.")
+
+    # BẮT ĐẦU THUẬT TOÁN
+
+    h = (b - a) / n # Dòng 1 - Thuật toán 16: Tính h
+    # Khởi tạo các biến tổng tích lũy
+    sum1 = 0.0 # Tổng các vị trí i chẵn (nhân với 2)
+    sum2 = 0.0 # Tổng các vị trí i lẻ (nhân với 4)
+
+    # Định nghĩa hàm tính x_i = a + i*h
+    def x(i):
+        return a + i * h
+
+    for i in range(1, n):     # Dòng 2 - Thuật toán 16
+        if i % 2 == 0: # Dòng 3 - Thuật toán 16
+            sum1 += f(x(i)) # Dòng 4 - Thuật toán 16
+        else:
+            sum2 += f(x(i)) # Dòng 6 - Thuật toán 16
+
+    I_Simpson = (h / 3) * (f(a) + 2 * sum1 + 4 * sum2 + f(b))  # Dòng 9 - Thuật toán 16
+    E = (M4 * (b - a) * h**4) / 180
+    return I_Simpson, E  # Dòng 10 - Thuật toán 16
+#SV6
+def f(x : float) -> float:
+  """Hàm dưới dấu tích phân f(x) = 1/(1+x).
+  Require: x là số thực , x khác -1
+  Ensure : trả về giá trị f(x) .
+  """
+  return 1/(1+x)
+
+a,b = 0 , 1 # tích phân trên đoạn [0,1]
+I_dung = np.log(2) #giá trị đúng của tích phân là ln 2
+M2 = 2 # max |f''(x)| trên đoạn [0,1]
+M4 = 24 # max |f''''(x)| trên đoạn [0,1]
+
+n_val = []
+for i in range (1,11):
+  n_val.append(2**i)
+# tạo danh sách lưu các giá trị h , sai số theo n
+ds_h = [] # lưu khoảng khi n giảm dần
+err_mid_actual = [] # sai số thực của HCN
+err_mid_theory = [] # sai số cận lý thuyết của HCN
+err_trap_actual = [] # sai số thực của hthang
+err_trap_theory = [] # sai số cận lý thuyết của hthag
+err_simp_actual = [] # sai số thực của simpson
+err_simp_theory = [] # sai số cận lý thuyết của hthang
+# Tạo đầu bảng
+print(" "*32 + "Bảng sai số " )
+print("%-6s %-10s %-12s %-12s %-12s %-12s %-12s %-12s" % 
+      ("n", "h", "HCN thuc", "HCN LT", "Thang thuc", "Thang LT", "Simp thuc", "Simp LT"))
+# Chạy vòng lặp lưu khoảng vào mảng
+for n in n_val:
+  h = (b-a)/n
+  ds_h.append(h)
+  # Gọi hàm
+  gttp_mid , canlt_mid = midpoint(f, a, b, n, M2)
+  gttp_trap , canlt_trap = trapezoid(f, a, b, n, M2)
+  gttp_sim , canlt_sim = simpson(f, a, b, n, M4)
+  # Tính sai số thực tế
+  err_mid = abs (gttp_mid - I_dung)
+  err_trap = abs (gttp_trap - I_dung)
+  err_sim = abs(gttp_sim - I_dung)
+  # Lưu mảng
+  err_mid_actual.append(err_mid)
+  err_mid_theory.append(canlt_mid)
+  err_trap_actual.append(err_trap)
+  err_trap_theory.append(canlt_trap)
+  err_simp_actual.append(err_sim)
+  err_simp_theory.append(canlt_sim)
+  # In ra bảng sai số
+  print("%-6d %-10.6f %-12.6f %-12.6f %-12.6f %-12.6f %-12.6f %-12.6f" % (n, h, err_mid, canlt_mid, err_trap, canlt_trap, err_sim, canlt_sim))
+
+# Vẽ đồ thị
+# Kiểm tra số lượng phần tử trong list
+print(len(ds_h), len(err_mid_actual), len(err_simp_theory))
+# Vẽ đồ thị
+import matplotlib.pyplot as plt
+plt.figure(figsize=(9,5))
+plt.loglog(ds_h, err_mid_actual,  'o-',color = 'pink', label='Sai số thực HCN - $O(h^2)$')
+plt.loglog(ds_h, err_trap_actual, 's-',color = 'black', label='Sai số thực Hình thang - $O(h^2)$')
+plt.loglog(ds_h, err_simp_actual, '^-', color = 'blue', label='Sai số thực Simpson - $O(h^4)$')
+# Cận LT
+plt.loglog(ds_h, err_mid_theory,  'o--',color = 'green', label='Cận lý thuyết HCN')
+plt.loglog(ds_h, err_trap_theory, 's--',color = 'red', label='Cận lý thuyết Hình thang')
+plt.loglog(ds_h, err_simp_theory, '^--',color = 'orange', label='Cận lý thuyết Simpson')
+# Note
+plt.xlabel('Bước lưới h ')
+plt.ylabel('Sai số tuyệt đối')
+plt.title('Sai số thực tế và cận lý thuyết theo h (thang log), f(x) = 1/(1+x) trên [0, 1]')
+plt.grid(True, which='both', linestyle='--', linewidth=0.5)
+plt.legend(fontsize=9, loc='lower right')
+
+# Kiểm chứng bậc O(h^2) , O(h^2) , O(h^4)
+print("\nBậc hội tụ thực nghiệm p = log2(ex_n / ex_2n)")
+print("%-14s %-12s %-12s %-12s" % ("n -> 2n", "HCN", "Thang", "Simpson"))
+for k in range(len(n_val) - 1):
+    p_mid = np.log2(err_mid_actual[k] / err_mid_actual[k + 1])
+    p_trap = np.log2(err_trap_actual[k] / err_trap_actual[k + 1])
+    p_simp = np.log2(err_simp_actual[k] / err_simp_actual[k + 1])
+    buoc_n = "%d -> %d" % (n_val[k], n_val[k + 1])
+    print("%-14s %-12.6f %-12.6f %-12.6f" % (buoc_n, p_mid, p_trap, p_simp))
+#So sánh sai số thực với cận lý thuyết
+print("\n So sánh sai số thực với cận lý thuyết ")
+print("%-6s %-10s %-12s %-12s %-12s %-12s %-12s %-12s %-12s" %
+("n", "h", "HCN thuc", "HCN LT", "Thang thuc", "Thang LT","Simp thuc", "Simp LT", "Ket luan"))
+# Chạy vòng lặp lưu khoảng vào mảng
+for k in range(len(n_val)):
+    n = n_val[k]
+    h = (b-a)/n
+    ds_h.append(h)
+    if (err_mid_actual[k] <= err_mid_theory[k] and err_trap_actual[k] <= err_trap_theory[k] and err_simp_actual[k] <= err_simp_theory[k]):
+        ket_luan = "Đúng"
+    else:
+        ket_luan = "VI PHẠM"
+    print("%-6d %-10.6f %-12.6f %-12.6f %-12.6f %-12.6f %-12.6f %-12.6f %-12s" %
+(n_val[k], ds_h[k], err_mid_actual[k], err_mid_theory[k],
+err_trap_actual[k], err_trap_theory[k],
+err_simp_actual[k], err_simp_theory[k], ket_luan))
+# Kiểm chứng (2*I_hcn + I_hthag)/3 = Simpson (2n)
+print("%-8s %-20s %-20s %-12s" % ("n", "(2*HCN+Thang)/3", "Simpson 2n", "Sai khac"))
+sai_khac_max = 0.0
+for n in n_val:
+    gttp_mid, canlt_mid = midpoint(f, a, b, n, M2)
+    gttp_trap, canlt_trap = trapezoid(f, a, b, n, M2)
+    gttp_sim, canlt_sim = simpson(f, a, b, 2 * n, M4)
+    gttp_tohop = (2 * gttp_mid + gttp_trap) / 3
+    sai_khac = abs(gttp_tohop - gttp_sim)
+if sai_khac > sai_khac_max:
+   sai_khac_max = sai_khac
+print("%-8d %-20.6f %-20.6f %-12.6f" % (n, gttp_tohop, gttp_sim, sai_khac))
+print("Sai khác lớn nhất: %.6f" % sai_khac_max)
