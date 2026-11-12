@@ -15,7 +15,7 @@ def midpoint(f, a, b, n, M2) -> tuple[float, float]: #(I, E)
         raise(Exception('tham so f phai la mot ham so hop le'))
     if a >= b:
         raise(Exception('can duoi a phai nho hon can tren b'))
-    if not isinstance(n, int):
+    if not isinstance(n, int) or n <= 0:
         raise(Exception('so khoang chia n phai la so nguyen duong'))
     if M2<0:
         raise(Exception('can sai so M2 phai la so ko am'))
