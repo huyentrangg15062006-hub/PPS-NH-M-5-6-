@@ -91,10 +91,12 @@ def simpson(f, a: float, b: float, n: int, M4: float) -> tuple[float, float]:
             - E (float): Cận sai số lý thuyết.
     """
     # Kiểm tra điều kiện biên
+    if not isinstance(n, int):
+        raise ValueError("Lỗi biên: Số đoạn chia n phải là số nguyên")
     if n <= 0:
         raise ValueError("Lỗi biên: Số đoạn chia n phải là số nguyên dương.")
     if n % 2 != 0:
-        raise ValueError(f"Lỗi biên: Phương pháp Simpson yêu cầu n phải là số chẵn .")
+        raise ValueError("Lỗi biên: Phương pháp Simpson yêu cầu n phải là số chẵn .")
     if M4 < 0:
         raise ValueError("Lỗi biên: Chặn trên đạo hàm M4 không thể âm.")
     if a > b:
