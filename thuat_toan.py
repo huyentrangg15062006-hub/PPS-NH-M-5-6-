@@ -44,25 +44,27 @@ Require:
 Ensure:
     -trả về giá trị tuple[I, E]: giá trị tích phân xấp xỉ I và cận sai số E
 '''
-def trapezoid(f, a, b, n, M2):
-    if n <= 0:
+def trapezoid(f, a, b, n, M2): 
+  if not isinstance(n, int):
+        raise ValueError('Số khoảng chia n phải là số nguyên')
+  if n<=0:
         raise ValueError('Số khoảng chia phải lớn hơn 0')
-    if a >= b:
+  if a >= b:
         raise ValueError('Cận dưới a phải nhỏ hơn cận trên b')
-    sum = 0
-    h = (b - a) / n #dòng 1 thuật toán 14
-    for i in range(1, n):
-        sum += f(a + i * h)
-    I = (h / 2) * (f(a) + 2 * sum + f(b)) #dòng 5 thuật toán 14
-    E = M2 * (b - a)**3 / (12 * n**2)
-    return I, E
+  sum=0
+  h=(b-a)/n #dòng 1 thuật toán 14
+  for i in range(1,n):
+      sum+=f(a+i*h)
+  I=(h/2)*(f(a)+2*sum+f(b)) #dòng 5 thuật toán 14
+  E=M2*(b-a)**3/(12*n**2)
+  return I, E
 '''
 Require:
     -x: danh sách mảng dữ liệu x
     -y: danh sách mảng dữ lệu y
     -h: độ rộng khoảng chia
 Ensure:
-    -trả về giá trị area: tổng diện tích bề mặt cắt ngang xấp xỉ tính được
+    -trả về giá trị area: tổng diện tích bề mặt cắt ngang xấp xỉ tính được 
 '''
 def trapezoid_table(x, y):
     area=0
