@@ -27,7 +27,7 @@ def check_n(n):
     """
     if not isinstance(n, numbers.Integral) or isinstance(n, bool):
         raise TypeError("n phải là số nguyên.")
-    if n < 2:
+    if n < 3:
         raise ValueError("n phải lớn hơn hoặc bằng 3.")
 
 # 3. Công thức Simpson 3/8
