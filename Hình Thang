@@ -11,6 +11,9 @@ Ensure:
     -trả về giá trị tuple[I, E]: giá trị tích phân xấp xỉ I và cận sai số E
 '''
 def trapezoid(f, a, b, n, M2): 
+  if not isinstance(n, int):
+
+        raise ValueError('Số khoảng chia n phải là số nguyên')
   if n<=0:
         raise ValueError('Số khoảng chia phải lớn hơn 0')
   if a >= b:
