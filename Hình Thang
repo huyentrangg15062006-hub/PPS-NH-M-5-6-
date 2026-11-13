@@ -12,7 +12,6 @@ Ensure:
 '''
 def trapezoid(f, a, b, n, M2): 
   if not isinstance(n, int):
-
         raise ValueError('Số khoảng chia n phải là số nguyên')
   if n<=0:
         raise ValueError('Số khoảng chia phải lớn hơn 0')
